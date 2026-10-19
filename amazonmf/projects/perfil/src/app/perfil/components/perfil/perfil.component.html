@@ -1,0 +1,10 @@
+<p>Información del usurio cargada desde el módulo <strong>Perfil</strong></p>
+
+<p *ngIf="perfil; else sinPerfil">
+    <strong>Nombre:</strong> {{perfil.nombre}}
+    <strong>Correo:</strong> {{perfil.correo}}
+</p>
+
+<ng-template #sinPerfil>
+    <p>No hay datos disponibles</p>
+</ng-template>
