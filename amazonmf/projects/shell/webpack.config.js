@@ -12,4 +12,7 @@ module.exports = withModuleFederationPlugin({
     ...shareAll({ singleton: true, strictVersion: true, requiredVersion: 'auto' }),
   },
 
+  //TODO probar import model tb
+   sharedMappings:["@core-lib"] //el shell es el módulo raíz y carga estas librerías una sola vez y la comparte con el resto de micros así realmente tenemos una instancia singleton  
+
 });

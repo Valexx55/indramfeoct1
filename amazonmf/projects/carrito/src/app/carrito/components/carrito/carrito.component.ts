@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CarritoService } from '../../services/carrito.service';
+import { CommunicationService } from '@core-lib';
 
 @Component({
   selector: 'app-carrito',
@@ -8,6 +9,7 @@ import { CarritoService } from '../../services/carrito.service';
 })
 export class CarritoComponent implements OnInit {
   private carrritoService = inject(CarritoService);
+  private comunicacion = inject(CommunicationService)
 
   carrito: any[] = [];
   total = 0;

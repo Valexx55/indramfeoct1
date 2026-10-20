@@ -12,4 +12,6 @@ module.exports = withModuleFederationPlugin({
     ...shareAll({ singleton: true, strictVersion: true, requiredVersion: 'auto' }),
   },
 
+  sharedMappings:["@core-lib", "@models"] //inyectando estas dependencias en este MF 
+
 });
