@@ -1,0 +1,43 @@
+<div class="carrito-container">
+
+    <h2>Carrrito de la compra</h2>
+
+    <table>
+        <thead>
+            <th>
+                Productos
+            </th>
+            <th>
+                Cantidad
+            </th>
+            <th>
+                Precio
+            </th>
+
+        </thead>
+        <tbody *ngIf="carrito && carrito.length >0; else carritoVacio">
+            <tr *ngFor="let item of carrito; trackBy: trackById">
+                <td>{{item.nombre}}</td>
+                <td>{{item.cantidad}}</td>
+                <td>{{item.precio | currency:'EUR' }}</td>
+            </tr>
+
+
+        </tbody>
+
+        <ng-template #carritoVacio>
+            <tbody>
+                <tr>
+                    <td colspan="3" class="text-center">Tu carrrito está vacío</td>
+                </tr>
+            </tbody>
+        </ng-template>
+
+    </table>
+    <div class="carrito-total">
+        <strong>TOTAL </strong> {{total | currency:'EUR'}}
+    </div>
+
+    <button (click)="vaciarCarrito()">Vaciar carrito</button>
+
+</div>
