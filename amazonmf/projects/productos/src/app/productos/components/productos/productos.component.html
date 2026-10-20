@@ -1,0 +1,14 @@
+<h2>Gestión de Productos</h2>
+<p>Listado de productos cargado desde el módulo <strong>Prodcutos</strong></p>
+<h2>Productos</h2>
+
+<ul *ngIf="productos.length>0; else sinProductos">
+    <li *ngFor="let p of productos">
+        {{p.nombre}} - {{p.precio | currency}}
+        <button (click)="agregarAlCarrito(p)">Añadir al carrito</button>
+    </li>
+</ul>
+
+<ng-template #sinProductos>
+    <p>No hay productos disponibles</p>
+</ng-template>

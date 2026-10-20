@@ -5,7 +5,7 @@ module.exports = withModuleFederationPlugin({
   name: 'productos',
 
   exposes: {
-    './Component': './projects/productos/src/app/app.component.ts',
+    './Module': './projects/productos/src/app/productos/productos.module.ts',
   },
 
   shared: {
