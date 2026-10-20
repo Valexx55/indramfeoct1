@@ -2,12 +2,19 @@
 <p>Listado de productos cargado desde el módulo <strong>Prodcutos</strong></p>
 <h2>Productos</h2>
 
-<ul *ngIf="productos.length>0; else sinProductos">
+<!-- <ul *ngIf="productos.length>0; else sinProductos">
     <li *ngFor="let p of productos">
         {{p.nombre}} - {{p.precio | currency}}
         <button (click)="agregarAlCarrito(p)">Añadir al carrito</button>
     </li>
-</ul>
+</ul> -->
+
+<div class="prodcutos-container" *ngIf="productos.length>0; else sinProductos" >
+    <app-producto-card *ngFor="let p of productos"
+        [producto]="p"
+        (agregar)="agregarAlCarrito($event)"
+    ></app-producto-card>
+</div>
 
 <ng-template #sinProductos>
     <p>No hay productos disponibles</p>
