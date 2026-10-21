@@ -21,6 +21,16 @@ export class CarritoComponent implements OnInit {
   ngOnInit(): void {
     this.cargarCarrito();
 
+    //Solución transmiento el listado completo de productoEvent
+
+    this.sub = this.comunicacionService.productoAddedSubject.subscribe(
+      (evento:ProductoEvent[]) => {
+        console.table(evento);
+      }
+    )
+
+    //Solución transmitiendo productoEvent de 1 en 1
+    /*
     this.sub = this.comunicacionService.productoAddedSubject.subscribe(
       (evento:ProductoEvent|null) => {
         if (evento)
@@ -31,7 +41,7 @@ export class CarritoComponent implements OnInit {
           console.log(`evento nulo`);
         }
       }
-    )
+    )*/
   }
 
   cargarCarrito(): void {
