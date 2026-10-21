@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ProductoEvent } from '@models';
-import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,12 +15,16 @@ export class CommunicationService {
   //productoAddedSubject = new ReplaySubject<ProductoEvent>(2);
   productoAddedSubject: BehaviorSubject<ProductoEvent[]>;
 
+  //lista mutabla/reactiva de productos
+  producto$:Observable<ProductoEvent[]>;
+
   constructor() {
 
     console.log('instanciando COMMUNICATION SERVICE');
 
     this.productoAddedSubject = new BehaviorSubject<ProductoEvent[]>([]);
-   }
+    this.producto$ = this.productoAddedSubject.asObservable();
+  }
 
    emitirProductoAdded (productoEvent: ProductoEvent)
    {

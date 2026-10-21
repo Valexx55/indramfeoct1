@@ -1,7 +1,7 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CarritoService } from '../../services/carrito.service';
 import { CommunicationService } from '@core-lib';
-import { Subscription } from 'rxjs';
+import { Observer, Subscription } from 'rxjs';
 import { ProductoEvent } from '@models';
 
 @Component({
@@ -18,6 +18,16 @@ export class CarritoComponent implements OnInit, OnDestroy {
   total = 0;
 
   private sub!:Subscription;
+  private sub2!:Subscription;
+
+  productos$ = this.comunicacionService.producto$;
+
+  observerListaProductos: Observer<ProductoEvent[]> = {
+    next: listaProductos => console.log('Nueva lista', listaProductos),
+    error: err => console.log('error ', err),
+    complete:() => console.log('Completado')
+  }
+
 
   ngOnInit(): void {
     this.cargarCarrito();
@@ -30,7 +40,9 @@ export class CarritoComponent implements OnInit, OnDestroy {
       }
     )
 
-   
+    this.sub2 = this.comunicacionService.productoAddedSubject.subscribe(this.observerListaProductos);
+
+  // this.comunicacionService.productoAddedSubject.next
 
     //Solución transmitiendo productoEvent de 1 en 1
     /*
@@ -48,7 +60,8 @@ export class CarritoComponent implements OnInit, OnDestroy {
   }
 
    ngOnDestroy(): void {
-      this.sub.unsubscribe();
+     this.sub.unsubscribe();
+     this.sub2.unsubscribe();
    }
 
   cargarCarrito(): void {
