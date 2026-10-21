@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CarritoService } from '../../services/carrito.service';
 import { CommunicationService } from '@core-lib';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,8 @@ import { ProductoEvent } from '@models';
   templateUrl: './carrito.component.html',
   styleUrls: ['./carrito.component.css'],
 })
-export class CarritoComponent implements OnInit {
+export class CarritoComponent implements OnInit, OnDestroy {
+
   private carrritoService = inject(CarritoService);
   private comunicacionService = inject(CommunicationService)
 
@@ -29,6 +30,8 @@ export class CarritoComponent implements OnInit {
       }
     )
 
+   
+
     //Solución transmitiendo productoEvent de 1 en 1
     /*
     this.sub = this.comunicacionService.productoAddedSubject.subscribe(
@@ -43,6 +46,10 @@ export class CarritoComponent implements OnInit {
       }
     )*/
   }
+
+   ngOnDestroy(): void {
+      this.sub.unsubscribe();
+   }
 
   cargarCarrito(): void {
     this.carrito = this.carrritoService.obtenerCarrito();
