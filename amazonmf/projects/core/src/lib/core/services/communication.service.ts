@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core';
 import { ProductoEvent } from '@models';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 
+
+const STORAGE_KEY = "carrito_productos";
 @Injectable({
   providedIn: 'root'
 })
 export class CommunicationService {
 
-  //no funciona bien, porque no puede escuchar desde el principio
+  //no funciona bien, porque no puede escuchar desde el principio: El ciclo de vida del Compoenente
+  //carritCompoente no se insntacia hasta que no visitas esa ruta, no se ejcuta el ciclo de vida (ni oninit, ni hace la suscripción)
   //productoAddedSubject = new Subject<ProductoEvent>();
   //mejora al anterior, pero carrito sólo recupera el úlitmo evento antes de iniciar la suscripción
   //productoAddedSubject = new BehaviorSubject<ProductoEvent|null>(null);//|Union Type
@@ -22,8 +25,21 @@ export class CommunicationService {
 
     console.log('instanciando COMMUNICATION SERVICE');
 
-    this.productoAddedSubject = new BehaviorSubject<ProductoEvent[]>([]);
+    let inicial: ProductoEvent[] = CommunicationService.recuperarEstadoProductos();
+
+    //this.productoAddedSubject = new BehaviorSubject<ProductoEvent[]>([]);
+    this.productoAddedSubject = new BehaviorSubject<ProductoEvent[]>(inicial);
     this.producto$ = this.productoAddedSubject.asObservable();
+  }
+
+  static recuperarEstadoProductos () : ProductoEvent[]
+  {
+    let inicial: ProductoEvent[] = [];
+
+      let guardado = localStorage.getItem(STORAGE_KEY);
+      inicial = guardado ? JSON.parse(guardado) : [];
+
+    return inicial;
   }
 
    emitirProductoAdded (productoEvent: ProductoEvent)
@@ -45,5 +61,23 @@ export class CommunicationService {
       //hacemos un nuevo array para que se tx el cambio
       this.productoAddedSubject.next([...listaActual, {...productoEvent, cantidad:1}])
     }
+
+    //guardamos localmente
+    this.persistir();
+  }
+
+  persistir ()
+  {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.productoAddedSubject.value));
+  }
+
+  vaciarProductos()
+  {
+    //reset lista de productos navegador
+    localStorage.removeItem(STORAGE_KEY);
+
+    //reset lista de productos RAM
+    this.productoAddedSubject.next([]);
+
   }
 }

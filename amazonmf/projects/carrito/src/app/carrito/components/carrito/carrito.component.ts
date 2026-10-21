@@ -1,7 +1,7 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CarritoService } from '../../services/carrito.service';
 import { CommunicationService } from '@core-lib';
-import { Observer, Subscription } from 'rxjs';
+import { map, Observable, Observer, Subscription } from 'rxjs';
 import { ProductoEvent } from '@models';
 
 @Component({
@@ -17,8 +17,11 @@ export class CarritoComponent implements OnInit, OnDestroy {
   carrito: any[] = [];
   total = 0;
 
+  total$!:Observable<number>;
+
   private sub!:Subscription;
   private sub2!:Subscription;
+  private totalSub!:Subscription;
 
   productos$ = this.comunicacionService.producto$;
 
@@ -40,7 +43,22 @@ export class CarritoComponent implements OnInit, OnDestroy {
       }
     )
 
+    this.totalSub = this.productos$.subscribe({
+      next: (productos) => {
+        this.total = productos.map(producto => (producto.cantidad ?? 0) * producto.precio).reduce((total, precioProducto) => total + precioProducto, 0)
+      }
+    })
+
     this.sub2 = this.comunicacionService.productoAddedSubject.subscribe(this.observerListaProductos);
+
+    //opción rX
+    this.total$ = this.productos$.pipe(
+      map(
+        productos => {
+          return productos.reduce((acc,p) => acc + p.precio * (p.cantidad??1), 0)
+        }
+      )
+    )
 
   // this.comunicacionService.productoAddedSubject.next
 
@@ -62,6 +80,7 @@ export class CarritoComponent implements OnInit, OnDestroy {
    ngOnDestroy(): void {
      this.sub.unsubscribe();
      this.sub2.unsubscribe();
+     this.totalSub.unsubscribe();
    }
 
   cargarCarrito(): void {
@@ -70,8 +89,14 @@ export class CarritoComponent implements OnInit, OnDestroy {
   }
 
   vaciarCarrito() {
-    this.carrritoService.vaciarCarrito();
-    this.cargarCarrito();
+
+    //servicio local mock
+    //this.carrritoService.vaciarCarrito();
+    //this.cargarCarrito();
+
+    this.comunicacionService.vaciarProductos();
+
+
   }
 
    /**
