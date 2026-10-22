@@ -30,7 +30,7 @@
         CORREGIMOS DESPUÉS DEL DESCANSO 11:30
         -->
         <!-- ESTADO REACTIVO lista de servicio-productos -->
-         <!-- con la pipe asyc, consumimos directamente los 
+        <!-- con la pipe asyc, consumimos directamente los 
           datos que nos proporciona el observable, ahorrádonos
           la suscripción -->
         <tbody>
@@ -68,5 +68,9 @@
             {{px.nombre}} (x {{px.cantidad}}) <button (click)="borrarProducto(px.id)">eliminar producto</button>
         </li>
     </ul>
+    <div class="carrito-total">
+        <strong>Número productos NGRX </strong> {{ productosNumeroArticulos$ | async }} <br>
+        <strong>TOTAL NGRX </strong> {{ productosPrecioTotal$ | async | currency: "EUR" }}
+    </div>
 
 </div>

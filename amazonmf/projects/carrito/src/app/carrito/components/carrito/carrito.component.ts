@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CarritoService } from '../../services/carrito.service';
-import { CommunicationService, selectProductos } from '@core-lib';
+import { CommunicationService, selectProductos, selectTotalPrice, selectTotalProducts } from '@core-lib';
 import { map, Observable, Observer, Subscription } from 'rxjs';
 import { ProductoEvent } from '@models';
 import { Store } from '@ngrx/store';
@@ -28,6 +28,8 @@ export class CarritoComponent implements OnInit, OnDestroy {
   productos$ = this.comunicacionService.producto$;
 
   productosNgRx$:Observable<ProductoEvent[]> = this.store.select(selectProductos);
+   productosNumeroArticulos$: Observable<number> = this.store.select(selectTotalProducts);
+  productosPrecioTotal$: Observable<number> = this.store.select(selectTotalPrice);
 
   observerListaProductos: Observer<ProductoEvent[]> = {
     next: listaProductos => console.log('Nueva lista', listaProductos),

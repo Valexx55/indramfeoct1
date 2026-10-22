@@ -15,6 +15,17 @@ export const selectProductos = createSelector(
     (state) => state.productos //los datos que extraigo con este selector
 )
 
-//TODO: hacer los selectores de los totales, 
+
+
+//by Dani Cruzado
 //1 total de artículos
+export const selectTotalProducts = createSelector(selectCartState, (state) =>
+  state.productos.reduce((acc, currVal) => acc + (currVal.cantidad || 1), 0),
+);
 //2 total del importe del carrito
+export const selectTotalPrice = createSelector(selectCartState, (state) =>
+  state.productos.reduce(
+    (acc, currVal) => acc + currVal.precio * (currVal.cantidad || 1),
+    0,
+  ),
+);
