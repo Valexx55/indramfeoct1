@@ -1,0 +1,16 @@
+{
+  "name": "spa5",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently -k -n ROOT,NEWS-BUILD,NEWS,FAV-BUILD,FAVORITES \"npm start --prefix root-config\" \"npm run build:watch --prefix news-app\" \"npm run serve:micro --prefix news-app\" \"npm run build:watch --prefix favorites-app\" \"npm run serve:micro --prefix favorites-app\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}
