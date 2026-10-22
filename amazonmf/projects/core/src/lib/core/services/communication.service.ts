@@ -88,4 +88,17 @@ export class CommunicationService {
     this.productoAddedSubject.next([]);
 
   }
+
+  eliminarProducto(id:number)
+  {
+    const listaActual = this.productoAddedSubject.value;
+    const nuevaLista = listaActual.filter(p => p.id !== id);
+    this.productoAddedSubject.next(nuevaLista);
+
+    // Persistencia local
+    this.persistir();
+
+    // NgRx: acción para eliminar del store
+    this.store.dispatch(CartActions.eliminarProducto({ id }));
+  }
 }

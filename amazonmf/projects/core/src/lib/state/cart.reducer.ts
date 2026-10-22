@@ -19,16 +19,17 @@ export const cartReducer = createReducer(
         let existe = state.productos.find(p=> p.id == producto.id);
         
         //calculo la nueva lista de productos
-        let productosNuevos = existe ?
-        state.productos.map(p=> p.id == producto.id ? {...p, cantidad: (p.cantidad ?? 1)+1}:p):
-        [...state.productos, {...producto, cantidad:1}]
-        //...state, productos:productosNuevo retorno una copia del nuevo estado y añado la propiedad productos
-        return {...state, productos:productosNuevos}
+       let productos = existe ?
+        state.productos.map(p => p.id == producto.id ? {...p, cantidad: (p.cantidad ?? 1)+1} : p)
+        :
+        [...state.productos, {...producto, cantidad :1}];
+
+        return{...state, productos}
     }),
     //on(CartActions.vaciarCarrito, (state)=>({...state, productos:[]})),
     on(CartActions.vaciarCarrito, ()=>({productos:[]})),
     on(CartActions.eliminarProducto, (state, {id}) => {
-        let productosNuevos = state.productos.filter(p => p.id !== id);
-        return {...state, productosNuevos}
+       const productos = state.productos.filter(p => p.id !== id);
+        return { ...state, productos };
     })
 )

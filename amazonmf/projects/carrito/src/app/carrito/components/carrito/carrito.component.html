@@ -62,4 +62,11 @@
 
     <button (click)="vaciarCarrito()">Vaciar carrito</button>
 
+    <h3>ESTADO NGRX</h3>
+    <ul>
+        <li *ngFor="let px of (productosNgRx$ | async)">
+            {{px.nombre}} (x {{px.cantidad}}) <button (click)="borrarProducto(px.id)">eliminar producto</button>
+        </li>
+    </ul>
+
 </div>
