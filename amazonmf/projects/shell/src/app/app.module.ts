@@ -24,7 +24,7 @@ import { HeaderComponent } from '@shared-lib';
       trace: false,
       autoPause: true
     }),
-    HeaderComponent
+    HeaderComponent//aunque sea un Componente, acutúa con la apariencia de un módulo a la hora de reutilizarse/refeernciarse
   ],
   providers: [],
   bootstrap: [AppComponent]
