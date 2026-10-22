@@ -6,10 +6,12 @@ import { AppComponent } from './app.component';
 import { StoreModule } from '@ngrx/store';
 import { cartReducer } from '@core-lib';
 import { StoreDevtools, StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { HeaderComponent } from '@shared-lib';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    //HeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -21,7 +23,8 @@ import { StoreDevtools, StoreDevtoolsModule } from '@ngrx/store-devtools';
       traceLimit: 75,
       trace: false,
       autoPause: true
-    })
+    }),
+    HeaderComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -13,6 +13,6 @@ module.exports = withModuleFederationPlugin({
   },
 
   //TODO probar import model tb
-   sharedMappings:["@core-lib"] //el shell es el módulo raíz y carga estas librerías una sola vez y la comparte con el resto de micros así realmente tenemos una instancia singleton  
+   sharedMappings:["@shared-lib","@core-lib"] //el shell es el módulo raíz y carga estas librerías una sola vez y la comparte con el resto de micros así realmente tenemos una instancia singleton  
 
 });
