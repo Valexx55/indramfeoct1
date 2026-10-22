@@ -12,12 +12,21 @@ import { ProductoEvent } from '@models';
 export class ProductosComponent implements OnInit{
   
 
-  private prodcutoService = inject(ProductosService);
+  private productoService = inject(ProductosService);
    private comunicacionService = inject(CommunicationService);
   productos: Producto[] = [];
 
   ngOnInit(): void {
-    this.productos = this.prodcutoService.getProductos();
+    //vesrión productos local
+    //this.productos = this.prodcutoService.getProductos();
+    //versión productos web
+    this.productoService.getProductos().subscribe({
+      next: (data:Producto[]) => this.productos = data,
+      error: (err) => console.error('Error cargando productos:', err), 
+      complete() {
+        console.log('La com ha terminado')
+      },
+    });
   }
 
   agregarAlCarrito(p:Producto)
