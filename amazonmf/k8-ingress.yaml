@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: indramf-ingress
+  namespace: mfe
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      # shell: todo lo que NO sea /carrito /perfil /productos
+      - path: /()(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: shell
+            port:
+              number: 80
+
+      - path: /carrito(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: carrito
+            port:
+              number: 80
+
+      - path: /perfil(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: perfil
+            port:
+              number: 80
+
+      - path: /productos(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: productos
+            port:
+              number: 80
