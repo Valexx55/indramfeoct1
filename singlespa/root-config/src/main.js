@@ -1,5 +1,15 @@
 
-import 'zone.js';
+/*
+Mantenemos Zone.js como dependencia global del orquestador single-spa porque cada Micro
+necesite de esa librería para inicializarse correctamente y que la APP Angular funciones 
+Otra opción sería hacer zone-less nuestras apps o modificar bootstrap y mount dentro de cada
+módulo, pero sería redundante la recarga de zone cada vez que se carga la app
+
+npx ng serve --port 4201 dentro de news para arrancar el micro angular independientemente
+npx ng serve --port 4202 dentro de favs para arrancar el micro angular independientemente
+
+*/
+import 'zone.js';//
 
 import { registerApplication, start } from 'single-spa';
 import * as singleSpa from 'single-spa';

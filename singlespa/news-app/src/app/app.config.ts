@@ -2,12 +2,14 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter } from '@angular/router';
 import {APP_BASE_HREF}from '@angular/common';
 import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    {provide: APP_BASE_HREF, useValue: '/news'}
+    {provide: APP_BASE_HREF, useValue: '/news'},
+    provideHttpClient()//iniciamos el httpclientmodule
   ]
 };
