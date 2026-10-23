@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+
+  shell:
+    build:
+      context: .
+      dockerfile: projects/shell/Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - carrito
+      - productos
+      - perfil
+
+  carrito:
+    build:
+      context: .
+      dockerfile: projects/carrito/Dockerfile
+    ports:
+      - "4201:80"
+
+  productos:
+    build:
+      context: .
+      dockerfile: projects/productos/Dockerfile
+    ports:
+      - "4203:80"
+
+  perfil:
+    build:
+      context: .
+      dockerfile: projects/perfil/Dockerfile
+    ports:
+      - "4202:80"
