@@ -1,0 +1,29 @@
+1) Docker instalado y arrancado
+2) kubectl instalado https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/
+4) kind instalado choco install kind comprueba con kind version
+5) Entorno WSL (proyecto clonado de git)
+
+        npm install
+
+6) Ejecución build de IMÁGENES de dokcer (build-docker.sh)
+7) Ejecuto bootstrap kind sh, que tiene los siguientes apartados
+
+
+    7.1 creamos el cluster (kind-config.yaml) y publicamos los puertos de acceso al cluster
+    7.2 creamos el namespace (partición lógica del cluster)
+    7.3 instalamos ingress-controller (que implementa la spec ingress -Load Balancer del cluster-)
+    7.4 cargamos las IMÁGENES de docker creadas en 6, en el cluster (ojo los nombres-debe coincidir nombre de imagen docker build con el nombre referido en el fichero yaml después de despliegue k8)
+    7.5 corremos las spec de los pods y servicios (un par por MF)
+    7.6 definimos las reglas de ingress para mapear el acceso https
+
+9) Podemos comprobar el estado del despliegue
+
+kubectl get pods -n ingress-nginx //namespace distinto, por ser de infraestructura
+kubectl get all -n mfe //los recursos de nuestro ns
+kubectl get ingress -n mfe //ingress -recurso aparte-
+
+10) Con todo arrancado, deberíamos poder navegar el localhost
+
+11) Podemos borrar el cluster, para liberar todos los recursos y detener todo
+
+kind delete cluster --name indramfe

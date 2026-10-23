@@ -1,0 +1,219 @@
+//USAMOS ANGULAR 15 - NODE 18 por la dependecia con WEBPACK
+node -v
+v18.20.8
+nvm use 18
+
+//creamos el workspace Y LA ESTRUCTURA BASE
+npx -p @angular/cli@15 ng new amazonmf --create-application=false --package-manager=npm
+//creamos los micros front ends (mini apps)
+//antes me meto dentro del workspace
+cd .\amazonmf\
+//con esto generamos el módulo raíz
+npx ng generate application shell --routing --style=css
+//generamos los módulos remotos / feautre - dominio
+npx ng generate application carrito --routing --style=css
+npx ng generate application productos --routing --style=css
+npx ng generate application perfil --routing --style=css
+
+//generamos las librerías / no es ejecutable
+npx ng generate library core //compartimos servicios en común
+npx ng generate library shared //componentes compartidos
+npx ng generate library models //datos
+
+//UNA VEZ CREADOS LOS PROYECTOS Y LIBRERÍAS DE MIS MICROS, LOS CONECTAMOS CON 
+//MODULE FED (desde amazonmf)
+
+//instalamos la librería a nivel global de nuestro proyecto/workspace
+npm install --save-dev @angular-architects/module-federation@15
+
+//configuramos la librería anterior para el módulo shell/ raíz
+npx ng add @angular-architects/module-federation@15 --project shell --type host --port 4200
+//configuramos la librería anterior para el resto de módulos (remotos/mfe)
+npx ng add @angular-architects/module-federation@15 --project carrito --type remote --port 4201
+npx ng add @angular-architects/module-federation@15 --project perfil --type remote --port 4202
+npx ng add @angular-architects/module-federation@15 --project productos --type remote --port 4203
+
+
+
+//para probar el despliegue individual
+//una vez realizadaz la configuración base, probamos a desplegar de manera indivdual en distintos terminales
+npx ng serve carrito
+npx ng serve perfil
+npx ng serve productos
+
+//ctrl+c para detener individualmente cada servidor/app
+
+
+//truco para levantar todos los micros 
+npm run run:all
+
+//TRABAJAMOS EN CADA PROYECTO LA LÓGICA/NEGOCIO DE CADA UNO
+//PERFIL
+
+//crear el módulo de perfil dentro de la app perfil
+npx ng generate module perfil --routing --project=perfil
+npx ng generate component perfil/components/perfil --project=perfil
+npx ng generate service perfil/services/perfil --project=perfil
+npx ng generate interface perfil/models/perfil --type=model --project=perfil
+
+//nota: NO SE INCLUYE EL CÓDIGO FUENTE, POR CLARIDAD DE LA GUÍA REVISAD EL REPOSITORIO
+
+//IGUALMENTE, TRABAJAMOS EL MICRO DE PRODUCTOS
+npx ng generate module productos --routing --project=productos
+npx ng generate component productos/components/productos --project=productos
+npx ng generate service productos/services/productos --project=productos
+npx ng generate interface productos/models/producto --type=model --project=productos
+
+//IGUALMENTE, TRABAJAMOS EL MICRO DE CARRITO
+npx ng generate module carrito --routing --project=carrito
+npx ng generate component carrito/components/carrito --project=carrito
+npx ng generate service carrito/services/carrito --project=carrito
+npx ng generate interface carrito/models/carritoItem --project=carrito
+
+
+DETALLES TÉCNICOS IMPORTANTE PARA CADA MICRO
+1) CONFIGFURANDO LAS RUTAS (RUTAS PROPIAS DEL MÓDULO QUE EXPORTAMOS -perfil ROUTING MODULE- Y LAS RUTAS DE LA APP MICRO -APP ROUTING MODULE-)
+2) CONFIGURAR EL WEBPACK.CONFIG.JS PARA DECLARAR LO QUE EXPORTAMOS/ COMPARTIMOS PÚBLICAMENTE CON EL RESTO DEL PROYECTOS
+3) REVISAR RL TSCONFIG APP JSON
+4) EN CADA MICRO, TENEMOS UN MÓDULO, QUE ES EL QUE COMPARTIMOS. PODRÍA SER DISTINTO PARA CADA PROYECTOS
+
+//LIGAMOS TODOS LOS MICROS, TRABAJANDO EL SHELL Y LA CONFIGURACIÓN DE LAS RUTAS
+1) EDITAMOS EL WEBPACK CONFIG DEL SHELL (DÓNDE ESTÁN LOS MICROS)
+2) EDITAMOS EL FICHERO DE RUTAS PARA ESTABLECER LA CORRESPODENCIA RUTA-MODULO (APP-ROUTING) DEL SHELL
+
+
+
+/*/*/*/*/*/*/*/**/**/*/*/*/**/*/*/*/**/*/*/*/**/
+/*/*/*/*/*/*/*/**/**/*/*/*/**/*/*/*/**/*/*/*/**/
+/*/*/*/*/*/*/*/**/**/*/*/*/**/*/*/*/**/*/*/*/**/
+/*/*/*/*/*/*/*/**/**/*/*/*/**/*/*/*/**/*/*/*/**/
+/*/*/*/*/*/*/*/**/**/*/*/*/**/*/*/*/**/*/*/*/**/
+/*/*/*/*/*/*/*/**/**/*/*/*/**/*/*/*/**/*/*/*/**/
+/*/*/*/*/*/*/*/**/**/*/*/*/**/*/*/*/**/*/*/*/**/
+/*/*/*/*/*/*/*/**/**/*/*/*/**/*/*/*/**/*/*/*/**/
+
+
+
+Una vez desplegados los componentes y los micros de cada 1 los comunicamos 
+
+1) @IN @OUT - Comunicación padre-hijo IN e hijo-padre OUT (ProductoCardComponent)
+2) DETALLAMOS LA COMUNIACIÓN ENTRE MICRO PRODUCTO-CARRITO
+
+    2.1 CREAMOS UN SERVICIO EN core
+
+        npx ng generate service core/services/communication --project=core
+
+    2.2 CREAMOS UNA INTERFAZ EN models
+
+        npx ng generate interface models/producto-event --project=models
+
+    2.3 DESCRIBIMOS EN SENDAS LIBRERÍAS, QUÉ SE COMPARTE PÚBLICAMENTE 
+
+        EDITAMOS ./projects/models/src/public-api.ts
+                 ./projects/models/src/public-api.ts
+
+    2.4 MODIFICAMOS EL TSCONFIG para AÑADIR ESTAS LIBRERÍAS AL BUNDLE DE COMPILACIÓN
+
+         "@models": [
+                "./projects/models/src/public-api.ts"
+          ]
+
+          "@core-lib": [
+                "./projects/models/src/public-api.ts"
+          ]
+
+    2.5 REFERENCIAMOS A ESAS LIBRERÍAS DESDE CADA MICRO QUE LO NECESITE
+
+        //esto es lo nuevo, tanto en webpack.config.js del Carrito como de Productos
+        sharedMappings:["@core-lib", "@models"] //con esto inyectamos el este MF estas dependencias
+
+    2.6 EN EL MÓDULO DEL SHELL, IMPORTAMOS LA LIBRERÍA DEL CORE 
+
+        sharedMappings:["@core-lib"] //ASÍ CONSEGUIMOS SERVICIOS REALMENTE SINGLETON que no haya duplicidad de servicios y realmente se inyecten las mismas instancias en cada micro
+
+    2.7 Usamos distintos mecanismos de RX/JS para comunicar vía servicio los Micros 
+
+        Subject, BehaviorSubject, ReplaySubject
+
+        ProductoComponent- EMISOR
+        CommunicationService- TRANSMISOR - inyectado en ambos Components
+        CarritoComponent- RECEPCIÓN
+
+    2.8 USAMOS APOYO DE LA PERSISTENCIA LOCAL DEL NAVEGADOR (SESSION/LOCALSTORAGE)
+
+        JSON.parse stringify - LocalStorage
+
+////TRABAJO CON NGRX
+
+1) instalo desde el workspace (carpeta raíz) las librerías de NgRx 
+
+    npm install @ngrx/store@15 @ngrx/store-devtools@15
+
+2) Definimos en la libería core los fichero de NgRx
+
+    reducer
+    actions
+    selector
+
+    y los exportamos públicamente actualizando el fichero de public-api de esa librería
+
+    export * from './lib/state/cart.selector';
+    export * from './lib/state/cart.reducer';
+    export * from './lib/state/cart.actions';
+
+3) Inyectamos el Store en ComService (dispatch) y el CarritoComponent (selector)    
+
+4) Inicializamos el Módulo del Store el módulo del Shell
+
+StoreModule.forRoot({carrito: cartReducer}),//Inicializa el Store de NgRx carrito es el slice y cartReducer es la función que contiene el estado inicial y la reacción a las acciones
+    StoreDevtoolsModule.instrument({
+      maxAge: 25, // Retains last 25 states
+      logOnly: !isDevMode(), // Restrict extension to log-only mode
+      autoPause: true, // Pauses recording actions and state changes when the extension window is not open
+      trace: false, //  If set to true, will include stack trace for every dispatched action, so you can see it in trace tab jumping directly to that part of code
+      traceLimit: 75, // maximum stack trace frames to be stored (in case trace option was provided as true)
+ })
+
+ 5) También inicializamos con StoreModule.forRoot({carrito: cartReducer}),//Inicializa el Store de NgRx carrito es el slice y cartReducer es la función que contiene el estado inicial y la reacción a las acciones
+ en los micros de Productos y Carrito para permitir que se arranquen
+ de manera independiente
+
+////TRABAJO CON interceptor para obtener productos de un API JSON
+
+1) Definimos un interceptor para obtener productos de un api real
+
+npx ng generate interceptor interceptors/productos --project=productos
+
+2) Programamos el interceptor, modificamos el ProductoService para 
+que tire del API real
+
+3) Cambiamos el consumo de ProductoService desde ProductoComponent (ahora hay que suscribirse)
+
+4) Añadimos el HttpClientModule a Productos y configuramos el interceptor
+
+
+
+
+
+//CREAR EL COMPONENTE COMPARTIDO (LIBRERÍA SHARED)
+
+1) Definimos el componente
+
+npx ng generate component components/header --project=shared
+
+2) Trabajamos su css, su plantilla y su ts
+
+3) Importante definirlo como standAlone:
+
+    - Importar manualmente asyncPipe
+    - Eliminarlo del NgModule de SharedModule
+
+4) Exportamos la librería modificando el fichero public-api de shared
+
+5) Modificamos el tsconfig global, para que compile la librería shared
+
+6) En el module de shell, modificamos el webpack-config para cargar la librería shared
+
+7) En el shell, en el módulo importamos ese Componente nuevo (El header)
+   y declaramos su etiqueta en el app compoennte html para que se cargue
+   en la cabecera

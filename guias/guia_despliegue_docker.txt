@@ -1,0 +1,15 @@
+1) GENERAMOS LOS FICHEROS DOCKERFILE EN CADA PROYECTO
+2) PARA CADA PROYECTO, CREAMOS EL FICHERO DE CONFIGURACIÓN DEL SERVIDOR WEB nginx
+3) CONSTRUTIR LAS IMÁGENES CON BUILD (build-docker.bat)
+4) CREAMOS EL FICHERO DOCKER-compose.yml
+5) LEVANTAMOS TODO CON docker compose up
+
+
+docker compose up --build para forzar la recompilación de IMÁGENES
+
+//paso extra para elimar el CORS:
+
+cambiar en el proyecto shell 2 cosas:
+
+    la CONFIGURACIÓN del nginx (la manera en la que se cargan los módulos) en el shell, ya hecho
+    webpack config (la ruta de los módulos) en el sheel, sutituimos ruta por nombre en red docker tb ALLOW COrs
